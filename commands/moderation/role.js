@@ -49,7 +49,7 @@ module.exports = {
                     'User Not Found',
                     'This user is not a member of this server.'
                 );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                return interaction.reply({ embeds: [errorEmbed], flags: 64 });
             }
 
             // Check role hierarchy
@@ -58,7 +58,7 @@ module.exports = {
                     'Insufficient Permissions',
                     'You cannot manage a role that is equal to or higher than your highest role.'
                 );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                return interaction.reply({ embeds: [errorEmbed], flags: 64 });
             }
 
             if (role.position >= interaction.guild.members.me.roles.highest.position) {
@@ -66,7 +66,7 @@ module.exports = {
                     'Insufficient Permissions',
                     'I cannot manage a role that is equal to or higher than my highest role.'
                 );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                return interaction.reply({ embeds: [errorEmbed], flags: 64 });
             }
 
             if (action === 'add') {
@@ -75,7 +75,7 @@ module.exports = {
                         'Role Already Assigned',
                         `${targetUser.username} already has the ${role.name} role.`
                     );
-                    return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                    return interaction.reply({ embeds: [errorEmbed], flags: 64 });
                 }
 
                 await targetMember.roles.add(role, `${reason} | Role added by: ${interaction.user.username}`);
@@ -116,7 +116,7 @@ module.exports = {
                         'Role Not Assigned',
                         `${targetUser.username} doesn't have the ${role.name} role.`
                     );
-                    return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                    return interaction.reply({ embeds: [errorEmbed], flags: 64 });
                 }
 
                 await targetMember.roles.remove(role, `${reason} | Role removed by: ${interaction.user.username}`);
@@ -160,7 +160,7 @@ module.exports = {
                 'An error occurred while managing the role. Please check my permissions and try again.'
             );
             
-            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            await interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
     }
 };

@@ -33,7 +33,7 @@ module.exports = {
                 'Invalid Guess',
                 `Your guess must be between 1 and ${maxRange}.`
             );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
 
         const secretNumber = Math.floor(Math.random() * maxRange) + 1;

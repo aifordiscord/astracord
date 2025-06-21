@@ -21,6 +21,12 @@ module.exports = {
 };
 
 async function handleSlashCommand(interaction) {
+    // Check if interaction is still valid
+    if (!interaction.isRepliable()) {
+        logger.warning(`Interaction ${interaction.id} is no longer repliable.`);
+        return;
+    }
+
     const command = interaction.client.commands.get(interaction.commandName);
     
     if (!command) {
@@ -51,7 +57,12 @@ async function handleSlashCommand(interaction) {
                 `Please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.data.name}\` command.`
             );
             
-            return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
+            try {
+                return await interaction.reply({ embeds: [cooldownEmbed], flags: 64 });
+            } catch (error) {
+                logger.error('Failed to send cooldown message:', error);
+                return;
+            }
         }
     }
     
@@ -71,16 +82,26 @@ async function handleSlashCommand(interaction) {
             'There was an error while executing this command. Please try again later.'
         );
 
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        } else {
-            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        try {
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ embeds: [errorEmbed], flags: 64 });
+            } else {
+                await interaction.reply({ embeds: [errorEmbed], flags: 64 });
+            }
+        } catch (replyError) {
+            logger.error('Failed to send error message:', replyError);
         }
     }
 }
 
 async function handleButtonInteraction(interaction) {
     if (!interaction.customId.startsWith('help_')) return;
+
+    // Check if interaction is still valid
+    if (!interaction.isRepliable()) {
+        logger.warning(`Button interaction ${interaction.id} is no longer repliable.`);
+        return;
+    }
 
     const embedBuilder = new CustomEmbedBuilder();
     const userId = interaction.user.id;
@@ -135,10 +156,15 @@ async function handleButtonInteraction(interaction) {
             const paginationData = paginationHandler.getPaginationData(userId);
             
             if (!paginationData || paginationData.category === 'main') {
-                return interaction.reply({ 
-                    content: 'Pagination data not found. Please use the help command again.', 
-                    ephemeral: true 
-                });
+                try {
+                    return await interaction.reply({ 
+                        content: 'Pagination data not found. Please use the help command again.', 
+                        flags: 64
+                    });
+                } catch (error) {
+                    logger.error('Failed to send pagination error message:', error);
+                    return;
+                }
             }
             
             let newPage = paginationData.currentPage;
@@ -182,10 +208,14 @@ async function handleButtonInteraction(interaction) {
             'An error occurred while processing your request. Please try again.'
         );
         
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        } else {
-            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        try {
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ embeds: [errorEmbed], flags: 64 });
+            } else {
+                await interaction.reply({ embeds: [errorEmbed], flags: 64 });
+            }
+        } catch (replyError) {
+            logger.error('Failed to send button interaction error message:', replyError);
         }
     }
 }

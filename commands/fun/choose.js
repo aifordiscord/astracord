@@ -26,7 +26,7 @@ module.exports = {
                 'Invalid Options',
                 'Please provide at least 2 options separated by commas.'
             );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
 
         const chosenOption = options[Math.floor(Math.random() * options.length)];

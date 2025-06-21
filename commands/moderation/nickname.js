@@ -40,7 +40,7 @@ module.exports = {
                     'User Not Found',
                     'This user is not a member of this server.'
                 );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                return interaction.reply({ embeds: [errorEmbed], flags: 64 });
             }
 
             if (targetMember.roles.highest.position >= interaction.member.roles.highest.position && targetUser.id !== interaction.user.id) {
@@ -48,7 +48,7 @@ module.exports = {
                     'Insufficient Permissions',
                     'You cannot change the nickname of a member with equal or higher role than you.'
                 );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                return interaction.reply({ embeds: [errorEmbed], flags: 64 });
             }
 
             const oldNickname = targetMember.nickname || targetUser.username;
@@ -101,7 +101,7 @@ module.exports = {
                 'An error occurred while changing the nickname. Please check my permissions and try again.'
             );
             
-            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            await interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
     }
 };

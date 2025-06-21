@@ -26,7 +26,7 @@ module.exports = {
                 'Invalid Word',
                 'Please use only letters (no numbers or special characters).'
             );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
 
         // Generate bot response based on last letter
