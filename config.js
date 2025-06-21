@@ -24,7 +24,7 @@ module.exports = {
     
     // Bot activity
     activity: {
-        name: 'with advanced commands!',
+        name: 'Made by aifordiscord!',
         type: ActivityType.Playing
     },
     
