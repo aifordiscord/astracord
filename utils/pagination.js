@@ -87,15 +87,6 @@ class PaginationHandler {
                 .setDisabled(disabled)
         );
 
-        row2.addComponents(
-            new ButtonBuilder()
-                .setCustomId('help_category_voice')
-                .setEmoji(emojis.voice.match(/:(\d+)>/)?.[1] || '🔊')
-                .setLabel('Voice')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(disabled)
-        );
-
         rows.push(row2);
 
         return rows;

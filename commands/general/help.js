@@ -28,7 +28,7 @@ module.exports = {
                     'Command Not Found',
                     `The command \`${commandName}\` does not exist.`
                 );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                return interaction.reply({ embeds: [errorEmbed], flags: 64 });
             }
 
             // Create detailed command help embed

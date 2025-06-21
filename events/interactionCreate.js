@@ -126,8 +126,34 @@ async function handleButtonInteraction(interaction) {
         } else if (interaction.customId.startsWith('help_category_')) {
             // Show category commands
             const category = interaction.customId.replace('help_category_', '');
+            
+            // Check if category exists in config
+            if (!config.categories[category]) {
+                try {
+                    return await interaction.reply({ 
+                        content: `Category "${category}" not found. Please use the help command again.`, 
+                        flags: 64
+                    });
+                } catch (error) {
+                    logger.error('Failed to send unknown category error message:', error);
+                    return;
+                }
+            }
+            
             const commands = interaction.client.commands.filter(cmd => cmd.category === category);
             const commandsArray = Array.from(commands.values());
+            
+            if (commandsArray.length === 0) {
+                try {
+                    return await interaction.reply({ 
+                        content: `No commands found in the "${category}" category.`, 
+                        flags: 64
+                    });
+                } catch (error) {
+                    logger.error('Failed to send no commands error message:', error);
+                    return;
+                }
+            }
             
             const totalPages = paginationHandler.getTotalPages(commandsArray.length, config.maxCommandsPerPage);
             const currentPage = 1;
