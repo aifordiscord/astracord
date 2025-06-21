@@ -1,10 +1,11 @@
+
 const { SlashCommandBuilder } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('stop')
-        .setDescription('Stop audio playback and clear the queue'),
+        .setDescription('Stop music playback and clear the queue'),
 
     usage: '/stop',
     cooldown: 3000,
@@ -40,23 +41,20 @@ module.exports = {
             }
         }
 
-        // Get the audio player and stop playback
-        if (interaction.client.audioPlayers) {
-            const player = interaction.client.audioPlayers.get(interaction.guild.id);
-            if (player) {
-                player.stop();
-            }
+        // Clear the queue
+        if (interaction.client.musicQueues) {
+            interaction.client.musicQueues.set(interaction.guild.id, []);
         }
 
         const stopEmbed = embedBuilder.createSuccessEmbed(
-            'Audio Stopped',
-            `${embedBuilder.addEmoji('voice')} Playback stopped and queue cleared.`
+            'Music Stopped',
+            `${embedBuilder.addEmoji('voice')} Music playback stopped and queue cleared.`
         );
 
         stopEmbed.addFields(
             {
-                name: '⏹️ Status',
-                value: 'Stopped',
+                name: '⏹️ Action',
+                value: 'Stopped & cleared queue',
                 inline: true
             },
             {
@@ -65,20 +63,14 @@ module.exports = {
                 inline: true
             },
             {
-                name: '👤 Action by',
+                name: '👤 Stopped by',
                 value: interaction.user.username,
                 inline: true
             }
         );
 
-        stopEmbed.addFields({
-            name: '🗑️ Queue',
-            value: 'Cleared',
-            inline: true
-        });
-
         stopEmbed.setFooter({
-            text: `Stopped by ${interaction.user.username}`,
+            text: 'Use /play to start playing music again',
             iconURL: interaction.user.displayAvatarURL()
         });
 

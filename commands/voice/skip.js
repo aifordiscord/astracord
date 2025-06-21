@@ -1,3 +1,4 @@
+
 const { SlashCommandBuilder } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
@@ -40,6 +41,14 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
+        // Get the audio player and stop current track
+        if (interaction.client.audioPlayers) {
+            const player = interaction.client.audioPlayers.get(interaction.guild.id);
+            if (player) {
+                player.stop();
+            }
+        }
+
         const skipEmbed = embedBuilder.createSuccessEmbed(
             skipAmount === 1 ? 'Song Skipped' : 'Songs Skipped',
             `${embedBuilder.addEmoji('voice')} Skipped ${skipAmount} song${skipAmount > 1 ? 's' : ''}.`
@@ -64,7 +73,7 @@ module.exports = {
         );
 
         skipEmbed.setFooter({
-            text: 'Playing next song in queue',
+            text: 'Use /play to add more music',
             iconURL: interaction.user.displayAvatarURL()
         });
 

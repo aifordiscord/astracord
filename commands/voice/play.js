@@ -1,7 +1,7 @@
 
 const { SlashCommandBuilder } = require('discord.js');
 const { createAudioPlayer, createAudioResource, AudioPlayerStatus, VoiceConnectionStatus, joinVoiceChannel, entersState } = require('@discordjs/voice');
-const ytdl = require('ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
@@ -41,13 +41,32 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
-        // Validate YouTube URL with improved regex pattern
+        // Validate YouTube URL with both regex and ytdl validation
         const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/)[\w-]+(&[\w=]*)?$/;
         
         if (!youtubeRegex.test(url)) {
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Invalid YouTube URL',
                 'Please provide a valid YouTube video URL!\n\nExample formats:\n• https://youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID'
+            );
+            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        }
+
+        // Additional validation with ytdl
+        try {
+            const isValid = ytdl.validateURL(url);
+            if (!isValid) {
+                const errorEmbed = embedBuilder.createErrorEmbed(
+                    'Invalid YouTube URL',
+                    'The provided URL is not a valid YouTube video URL!'
+                );
+                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            }
+        } catch (error) {
+            console.error('URL validation error:', error);
+            const errorEmbed = embedBuilder.createErrorEmbed(
+                'URL Validation Failed',
+                'Unable to validate the YouTube URL. Please try again.'
             );
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -91,18 +110,32 @@ module.exports = {
                 return interaction.editReply({ embeds: [errorEmbed] });
             }
 
-            // Get video info
-            const info = await ytdl.getInfo(url);
-            const title = info.videoDetails.title;
+            // Get video info with error handling
+            let info, title;
+            try {
+                info = await ytdl.getInfo(url);
+                title = info.videoDetails.title;
+            } catch (error) {
+                console.error('Error getting video info:', error);
+                const errorEmbed = embedBuilder.createErrorEmbed(
+                    'Video Info Error',
+                    'Unable to get video information. The video might be private, age-restricted, or unavailable.'
+                );
+                return interaction.editReply({ embeds: [errorEmbed] });
+            }
 
-            // Create audio stream
+            // Create audio stream with improved options
             const stream = ytdl(url, {
                 filter: 'audioonly',
                 quality: 'highestaudio',
-                highWaterMark: 1 << 25
+                highWaterMark: 1 << 25,
+                dlChunkSize: 0
             });
 
-            const resource = createAudioResource(stream);
+            const resource = createAudioResource(stream, {
+                inputType: 'arbitrary',
+                inlineVolume: true
+            });
             
             // Create or get audio player
             if (!interaction.client.audioPlayers) {
