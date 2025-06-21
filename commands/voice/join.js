@@ -49,7 +49,16 @@ module.exports = {
                 interaction.client.voiceConnections = new Map();
             }
 
-            // Create voice connection
+            // Check if already connected to this guild
+            const existingConnection = interaction.client.voiceConnections.get(interaction.guild.id);
+            if (existingConnection && existingConnection.state.status !== VoiceConnectionStatus.Destroyed) {
+                const alreadyConnectedEmbed = embedBuilder.createWarningEmbed(
+                    'Already Connected',
+                    `I'm already connected to a voice channel in this server!`
+                );
+                return interaction.editReply({ embeds: [alreadyConnectedEmbed] });
+            }
+
             const connection = joinVoiceChannel({
                 channelId: voiceChannel.id,
                 guildId: interaction.guild.id,
@@ -59,11 +68,11 @@ module.exports = {
             // Store the connection
             interaction.client.voiceConnections.set(interaction.guild.id, connection);
 
-            // Wait for connection to be ready with longer timeout
-            await entersState(connection, VoiceConnectionStatus.Ready, 30000);
+            // Wait for connection to be ready with shorter timeout
+            await entersState(connection, VoiceConnectionStatus.Ready, 15000);
 
             const successEmbed = embedBuilder.createSuccessEmbed(
-                'Voice Channel Joined',
+                'Joined Voice Channel',
                 `${embedBuilder.addEmoji('voice')} Successfully joined **${voiceChannel.name}**!`
             );
 
@@ -75,13 +84,13 @@ module.exports = {
                 },
                 {
                     name: '👥 Members',
-                    value: `${voiceChannel.members.size} member(s)`,
+                    value: voiceChannel.members.size.toString(),
                     inline: true
                 },
                 {
-                    name: '🔊 Status',
-                    value: 'Connected and ready!',
-                    inline: true
+                    name: '🎵 Ready to play',
+                    value: 'Use `/play` to start playing music!',
+                    inline: false
                 }
             );
 
@@ -90,17 +99,24 @@ module.exports = {
                 iconURL: interaction.user.displayAvatarURL()
             });
 
-            await interaction.reply({ embeds: [successEmbed] });
+            await interaction.editReply({ embeds: [successEmbed] });
 
         } catch (error) {
             console.error('Error joining voice channel:', error);
 
+            // Clean up failed connection
+            const connection = interaction.client.voiceConnections.get(interaction.guild.id);
+            if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
+                connection.destroy();
+            }
+            interaction.client.voiceConnections.delete(interaction.guild.id);
+
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Connection Failed',
-                'An error occurred while trying to join the voice channel. Please try again later.'
+                'Failed to join the voice channel. Please make sure the bot has proper permissions (Connect and Speak) and try again.'
             );
 
-            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            await interaction.editReply({ embeds: [errorEmbed] });
         }
     }
 };

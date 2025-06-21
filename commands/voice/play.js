@@ -42,23 +42,30 @@ module.exports = {
         }
 
         // Validate YouTube URL
+        const isValidYouTubeURL = (url) => {
+            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/)[\w-]+/;
+            return youtubeRegex.test(url);
+        };
+
+        if (!isValidYouTubeURL(url)) {
+            const errorEmbed = embedBuilder.createErrorEmbed(
+                'Invalid URL',
+                'Please provide a valid YouTube URL!\n\nExample formats:\n• https://youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID'
+            );
+            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        }
+
+        // Additional validation with ytdl-core
         try {
             if (!ytdl.validateURL(url)) {
                 const errorEmbed = embedBuilder.createErrorEmbed(
-                    'Invalid URL',
-                    'Please provide a valid YouTube URL!'
+                    'Invalid YouTube URL',
+                    'The provided URL is not a valid YouTube video URL!'
                 );
                 return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
             }
         } catch (error) {
-            // If ytdl validation fails, try to check if it's a YouTube URL manually
-            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
-                const errorEmbed = embedBuilder.createErrorEmbed(
-                    'Invalid URL',
-                    'Please provide a valid YouTube URL!'
-                );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
-            }
+            console.warn('ytdl.validateURL failed, but URL format looks correct:', error.message);
         }
 
         await interaction.deferReply();
@@ -83,12 +90,19 @@ module.exports = {
 
             // Wait for connection to be ready with better error handling
             try {
-                await entersState(connection, VoiceConnectionStatus.Ready, 30000);
+                await entersState(connection, VoiceConnectionStatus.Ready, 15000);
             } catch (error) {
                 console.error('Error joining voice channel:', error);
+                
+                // Clean up failed connection
+                if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
+                    connection.destroy();
+                }
+                interaction.client.voiceConnections.delete(interaction.guild.id);
+                
                 const errorEmbed = embedBuilder.createErrorEmbed(
                     'Connection Failed',
-                    'Failed to connect to the voice channel. Please try again.'
+                    'Failed to connect to the voice channel. Please make sure the bot has proper permissions and try again.'
                 );
                 return interaction.editReply({ embeds: [errorEmbed] });
             }
