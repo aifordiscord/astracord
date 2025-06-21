@@ -73,11 +73,6 @@ module.exports = {
             name: 'Games',
             emoji: 'games',
             description: 'Interactive game commands'
-        },
-        voice: {
-            name: 'Voice',
-            emoji: 'voice',
-            description: 'Voice channel commands'
         }
     }
 };

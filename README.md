@@ -1,9 +1,10 @@
+
 # AstraCord
 
 <div align="center">
   <img src="https://github.com/aifordiscord/astracord/raw/main/assets/banner.png" alt="AstraCord Banner" width="800"/>
   
-  <p><strong>A powerful, feature-rich Discord bot with 58+ commands across 5 categories</strong></p>
+  <p><strong>A powerful, feature-rich Discord bot with 47+ commands across 4 categories</strong></p>
   
   [![Discord](https://img.shields.io/discord/YOUR_SERVER_ID?color=7289da&logo=discord&logoColor=white&label=Support%20Server)](https://dsc.gg/aifordiscord)
   [![Bot Invite](https://img.shields.io/badge/Invite%20Bot-AstraCord-7289da?logo=discord&logoColor=white)](https://dsc.gg/astracord)
@@ -18,7 +19,6 @@ AstraCord is a comprehensive Discord bot built with modern architecture and adva
 
 - **🎮 Interactive Games** - Play games like Blackjack, Connect 4, Snake, Memory, and more
 - **🛡️ Advanced Moderation** - Complete moderation suite with warnings, bans, role management
-- **🎵 Voice Commands** - Voice channel management and music control framework
 - **🎭 Fun Commands** - Entertainment commands including memes, jokes, trivia, and utilities
 - **📊 Server Management** - Server info, user info, statistics, and administration tools
 - **🔧 Advanced Help System** - Interactive navigation with pagination and category browsing
@@ -117,17 +117,6 @@ Information and utility commands:
 - `emojis` - Custom emoji display
 - `invite` - Bot invite link with permissions
 
-### 🎵 Voice (11 Commands)
-Voice channel and music framework:
-- `join` / `leave` - Voice channel connection
-- `play` - Audio playback framework
-- `pause` / `resume` / `stop` - Playback controls
-- `skip` - Skip songs in queue
-- `queue` - Queue management with view/clear/shuffle
-- `nowplaying` - Current song information
-- `volume` - Volume control
-- `loop` - Loop mode for songs and queue
-
 ## 🏗️ Architecture
 
 AstraCord features a professional modular architecture:
@@ -138,8 +127,7 @@ astracord/
 │   ├── fun/           # Entertainment commands
 │   ├── games/         # Interactive game commands
 │   ├── general/       # Information and utility commands
-│   ├── moderation/    # Server moderation tools
-│   └── voice/         # Voice channel commands
+│   └── moderation/    # Server moderation tools
 ├── events/            # Discord.js event handlers
 ├── handlers/          # Command and event loading systems
 ├── utils/             # Utility classes and helpers
@@ -208,12 +196,11 @@ AstraCord was developed using advanced AI assistance including:
 
 ## 📊 Statistics
 
-- **Total Commands**: 58
-- **Categories**: 5
+- **Total Commands**: 47
+- **Categories**: 4
 - **Interactive Games**: 11
 - **Moderation Tools**: 13
-- **Voice Commands**: 11
-- **Lines of Code**: 5000+
+- **Lines of Code**: 4000+
 
 ---
 
