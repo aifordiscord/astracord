@@ -42,12 +42,23 @@ module.exports = {
         }
 
         // Validate YouTube URL
-        if (!ytdl.validateURL(url)) {
-            const errorEmbed = embedBuilder.createErrorEmbed(
-                'Invalid URL',
-                'Please provide a valid YouTube URL!'
-            );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        try {
+            if (!ytdl.validateURL(url)) {
+                const errorEmbed = embedBuilder.createErrorEmbed(
+                    'Invalid URL',
+                    'Please provide a valid YouTube URL!'
+                );
+                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            }
+        } catch (error) {
+            // If ytdl validation fails, try to check if it's a YouTube URL manually
+            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+                const errorEmbed = embedBuilder.createErrorEmbed(
+                    'Invalid URL',
+                    'Please provide a valid YouTube URL!'
+                );
+                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            }
         }
 
         await interaction.deferReply();
@@ -70,8 +81,17 @@ module.exports = {
                 interaction.client.voiceConnections.set(interaction.guild.id, connection);
             }
 
-            // Wait for connection to be ready
-            await entersState(connection, VoiceConnectionStatus.Ready, 30000);
+            // Wait for connection to be ready with better error handling
+            try {
+                await entersState(connection, VoiceConnectionStatus.Ready, 15000);
+            } catch (error) {
+                console.error('Error joining voice channel:', error);
+                const errorEmbed = embedBuilder.createErrorEmbed(
+                    'Connection Failed',
+                    'Failed to connect to the voice channel. Please try again.'
+                );
+                return interaction.editReply({ embeds: [errorEmbed] });
+            }
 
             // Get video info
             const info = await ytdl.getInfo(url);

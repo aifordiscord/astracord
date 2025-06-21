@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
@@ -32,10 +33,38 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
+        // Stop the audio player
+        if (interaction.client.audioPlayers) {
+            const player = interaction.client.audioPlayers.get(interaction.guild.id);
+            if (player) {
+                player.stop();
+            }
+        }
+
         const stopEmbed = embedBuilder.createSuccessEmbed(
             'Audio Stopped',
             `${embedBuilder.addEmoji('voice')} Playback stopped and queue cleared.`
         );
+
+        stopEmbed.addFields(
+            {
+                name: '⏹️ Status',
+                value: 'Stopped',
+                inline: true
+            },
+            {
+                name: '📍 Channel',
+                value: botVoiceChannel.name,
+                inline: true
+            },
+            {
+                name: '👤 Action by',
+                value: interaction.user.username,
+                inline: true
+            }
+        );
+
+        await interaction.reply({ embeds: [stopEmbed] });
 
         stopEmbed.addFields(
             {

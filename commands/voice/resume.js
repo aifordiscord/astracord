@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
@@ -60,6 +61,14 @@ module.exports = {
             iconURL: interaction.user.displayAvatarURL()
         });
 
-        await interaction.reply({ embeds: [resumeEmbed] });
+        // Get the audio player and resume playback
+        if (interaction.client.audioPlayers) {
+            const player = interaction.client.audioPlayers.get(interaction.guild.id);
+            if (player) {
+                player.unpause();
+            }
+        }
+
+        await interaction.reply({ embeds: [resumeEmbed] });;
     }
 };
