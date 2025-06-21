@@ -40,6 +40,14 @@ module.exports = {
             }
         }
 
+        // Get the audio player and stop playback
+        if (interaction.client.audioPlayers) {
+            const player = interaction.client.audioPlayers.get(interaction.guild.id);
+            if (player) {
+                player.stop();
+            }
+        }
+
         const stopEmbed = embedBuilder.createSuccessEmbed(
             'Audio Stopped',
             `${embedBuilder.addEmoji('voice')} Playback stopped and queue cleared.`

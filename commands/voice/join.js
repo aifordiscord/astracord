@@ -43,18 +43,20 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
+        await interaction.deferReply();
+
         try {
             // Initialize voice connections map if not exists
             if (!interaction.client.voiceConnections) {
                 interaction.client.voiceConnections = new Map();
             }
 
-            // Check if already connected to this guild
+            // Check if already connected to this channel
             const existingConnection = interaction.client.voiceConnections.get(interaction.guild.id);
-            if (existingConnection && existingConnection.state.status !== VoiceConnectionStatus.Destroyed) {
-                const alreadyConnectedEmbed = embedBuilder.createWarningEmbed(
+            if (existingConnection && existingConnection.joinConfig.channelId === voiceChannel.id) {
+                const alreadyConnectedEmbed = embedBuilder.createInfoEmbed(
                     'Already Connected',
-                    `I'm already connected to a voice channel in this server!`
+                    `${embedBuilder.addEmoji('voice')} I'm already connected to ${voiceChannel.name}!`
                 );
                 return interaction.editReply({ embeds: [alreadyConnectedEmbed] });
             }
@@ -68,15 +70,15 @@ module.exports = {
             // Store the connection
             interaction.client.voiceConnections.set(interaction.guild.id, connection);
 
-            // Wait for connection to be ready with shorter timeout
+            // Wait for connection to be ready
             await entersState(connection, VoiceConnectionStatus.Ready, 15000);
 
-            const successEmbed = embedBuilder.createSuccessEmbed(
+            const joinEmbed = embedBuilder.createSuccessEmbed(
                 'Joined Voice Channel',
-                `${embedBuilder.addEmoji('voice')} Successfully joined **${voiceChannel.name}**!`
+                `${embedBuilder.addEmoji('voice')} Successfully joined ${voiceChannel.name}!`
             );
 
-            successEmbed.addFields(
+            joinEmbed.addFields(
                 {
                     name: '📍 Channel',
                     value: voiceChannel.name,
@@ -88,32 +90,34 @@ module.exports = {
                     inline: true
                 },
                 {
-                    name: '🎵 Ready to play',
-                    value: 'Use `/play` to start playing music!',
-                    inline: false
+                    name: '🎵 Ready for',
+                    value: 'Music playback',
+                    inline: true
                 }
             );
 
-            successEmbed.setFooter({
-                text: `Joined by ${interaction.user.username}`,
-                iconURL: interaction.user.displayAvatarURL()
+            joinEmbed.setFooter({
+                text: 'Use /play to start playing music!',
+                iconURL: interaction.client.user.displayAvatarURL()
             });
 
-            await interaction.editReply({ embeds: [successEmbed] });
+            await interaction.editReply({ embeds: [joinEmbed] });
 
         } catch (error) {
             console.error('Error joining voice channel:', error);
 
             // Clean up failed connection
-            const connection = interaction.client.voiceConnections.get(interaction.guild.id);
-            if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
-                connection.destroy();
+            if (interaction.client.voiceConnections) {
+                const connection = interaction.client.voiceConnections.get(interaction.guild.id);
+                if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
+                    connection.destroy();
+                }
+                interaction.client.voiceConnections.delete(interaction.guild.id);
             }
-            interaction.client.voiceConnections.delete(interaction.guild.id);
 
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Connection Failed',
-                'Failed to join the voice channel. Please make sure the bot has proper permissions (Connect and Speak) and try again.'
+                'Failed to connect to the voice channel. Please make sure the bot has proper permissions and try again.'
             );
 
             await interaction.editReply({ embeds: [errorEmbed] });

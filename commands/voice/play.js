@@ -41,31 +41,22 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
-        // Validate YouTube URL
-        const isValidYouTubeURL = (url) => {
-            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/)[\w-]+/;
-            return youtubeRegex.test(url);
-        };
-
-        if (!isValidYouTubeURL(url)) {
-            const errorEmbed = embedBuilder.createErrorEmbed(
-                'Invalid URL',
-                'Please provide a valid YouTube URL!\n\nExample formats:\n• https://youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID'
-            );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
-        }
-
-        // Additional validation with ytdl-core
+        // Validate YouTube URL with ytdl-core
         try {
             if (!ytdl.validateURL(url)) {
                 const errorEmbed = embedBuilder.createErrorEmbed(
                     'Invalid YouTube URL',
-                    'The provided URL is not a valid YouTube video URL!'
+                    'Please provide a valid YouTube video URL!\n\nExample formats:\n• https://youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID'
                 );
                 return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
             }
         } catch (error) {
-            console.warn('ytdl.validateURL failed, but URL format looks correct:', error.message);
+            console.error('URL validation error:', error);
+            const errorEmbed = embedBuilder.createErrorEmbed(
+                'Invalid YouTube URL',
+                'Please provide a valid YouTube video URL!'
+            );
+            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
         await interaction.deferReply();

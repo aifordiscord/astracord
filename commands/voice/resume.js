@@ -32,6 +32,14 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
+        // Get the audio player and resume playback
+        if (interaction.client.audioPlayers) {
+            const player = interaction.client.audioPlayers.get(interaction.guild.id);
+            if (player) {
+                player.unpause();
+            }
+        }
+
         const resumeEmbed = embedBuilder.createSuccessEmbed(
             'Audio Resumed',
             `${embedBuilder.addEmoji('voice')} Playback has been resumed.`
