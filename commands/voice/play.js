@@ -1,4 +1,3 @@
-
 const { SlashCommandBuilder } = require('discord.js');
 const { createAudioPlayer, createAudioResource, AudioPlayerStatus, VoiceConnectionStatus, joinVoiceChannel, entersState } = require('@discordjs/voice');
 const ytdl = require('@distube/ytdl-core');
@@ -22,34 +21,42 @@ module.exports = {
         const url = interaction.options.getString('url');
 
         const voiceChannel = interaction.member.voice.channel;
-        
+
         if (!voiceChannel) {
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'No Voice Channel',
-                'You need to be in a voice channel to play audio!'
+                'You need to be in a voice channel to play music!'
             );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.editReply({ embeds: [errorEmbed] });
         }
 
         const permissions = voiceChannel.permissionsFor(interaction.guild.members.me);
-        
-        if (!permissions.has('Connect') || !permissions.has('Speak')) {
+
+        if (!permissions.has('Connect')) {
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Missing Permissions',
-                'I need permission to connect and speak in your voice channel!'
+                'I don\'t have permission to connect to your voice channel!'
             );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.editReply({ embeds: [errorEmbed] });
         }
 
-        // Validate YouTube URL with both regex and ytdl validation
+        if (!permissions.has('Speak')) {
+            const errorEmbed = embedBuilder.createErrorEmbed(
+                'Missing Permissions',
+                'I don\'t have permission to speak in your voice channel!'
+            );
+            return interaction.editReply({ embeds: [errorEmbed] });
+        }
+
+        // Validate YouTube URL with improved regex pattern
         const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/)[\w-]+(&[\w=]*)?$/;
-        
+
         if (!youtubeRegex.test(url)) {
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Invalid YouTube URL',
                 'Please provide a valid YouTube video URL!\n\nExample formats:\n• https://youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID'
             );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
 
         // Additional validation with ytdl
@@ -60,7 +67,7 @@ module.exports = {
                     'Invalid YouTube URL',
                     'The provided URL is not a valid YouTube video URL!'
                 );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+                return interaction.editReply({ embeds: [errorEmbed] });
             }
         } catch (error) {
             console.error('URL validation error:', error);
@@ -68,7 +75,7 @@ module.exports = {
                 'URL Validation Failed',
                 'Unable to validate the YouTube URL. Please try again.'
             );
-            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.editReply({ embeds: [errorEmbed] });
         }
 
         await interaction.deferReply();
@@ -81,7 +88,7 @@ module.exports = {
 
             // Get or create voice connection
             let connection = interaction.client.voiceConnections.get(interaction.guild.id);
-            
+
             if (!connection || connection.state.status === VoiceConnectionStatus.Destroyed) {
                 connection = joinVoiceChannel({
                     channelId: voiceChannel.id,
@@ -96,18 +103,19 @@ module.exports = {
                 await entersState(connection, VoiceConnectionStatus.Ready, 15000);
             } catch (error) {
                 console.error('Error joining voice channel:', error);
-                
+
                 // Clean up failed connection
                 if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
                     connection.destroy();
                 }
                 interaction.client.voiceConnections.delete(interaction.guild.id);
-                
+
                 const errorEmbed = embedBuilder.createErrorEmbed(
-                    'Connection Failed',
-                    'Failed to connect to the voice channel. Please make sure the bot has proper permissions and try again.'
+                    'Playback Failed',
+                    'Failed to play the audio. Please try again with a different URL.'
                 );
-                return interaction.editReply({ embeds: [errorEmbed] });
+
+                await interaction.editReply({ embeds: [errorEmbed] });
             }
 
             // Get video info with error handling
@@ -136,7 +144,7 @@ module.exports = {
                 inputType: 'arbitrary',
                 inlineVolume: true
             });
-            
+
             // Create or get audio player
             if (!interaction.client.audioPlayers) {
                 interaction.client.audioPlayers = new Map();
@@ -195,12 +203,12 @@ module.exports = {
 
         } catch (error) {
             console.error('Error playing audio:', error);
-            
+
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Playback Failed',
                 'An error occurred while trying to play the audio. Please check the URL and try again.'
             );
-            
+
             await interaction.editReply({ embeds: [errorEmbed] });
         }
     }
