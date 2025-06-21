@@ -43,52 +43,37 @@ class PaginationHandler {
         const rows = [];
         const config = require('../config.js');
         
-        // First row
-        const row1 = new ActionRowBuilder();
+        // Single row with all categories
+        const categoryRow = new ActionRowBuilder();
         
-        row1.addComponents(
+        categoryRow.addComponents(
             new ButtonBuilder()
                 .setCustomId('help_category_general')
                 .setEmoji(emojis.info.match(/:(\d+)>/)?.[1] || 'ℹ️')
                 .setLabel('General')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(disabled)
-        );
-
-        row1.addComponents(
+                .setStyle(ButtonStyle.Primary)
+                .setDisabled(disabled),
             new ButtonBuilder()
                 .setCustomId('help_category_moderation')
                 .setEmoji(emojis.moderation.match(/:(\d+)>/)?.[1] || '🛡️')
                 .setLabel('Moderation')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(disabled)
-        );
-
-        row1.addComponents(
+                .setStyle(ButtonStyle.Primary)
+                .setDisabled(disabled),
             new ButtonBuilder()
                 .setCustomId('help_category_fun')
                 .setEmoji(emojis.fun.match(/:(\d+)>/)?.[1] || '🎉')
                 .setLabel('Fun')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(disabled)
-        );
-
-        rows.push(row1);
-
-        // Second row
-        const row2 = new ActionRowBuilder();
-
-        row2.addComponents(
+                .setStyle(ButtonStyle.Primary)
+                .setDisabled(disabled),
             new ButtonBuilder()
                 .setCustomId('help_category_games')
                 .setEmoji(emojis.games.match(/:(\d+)>/)?.[1] || '🎮')
                 .setLabel('Games')
-                .setStyle(ButtonStyle.Secondary)
+                .setStyle(ButtonStyle.Primary)
                 .setDisabled(disabled)
         );
 
-        rows.push(row2);
-
+        rows.push(categoryRow);
         return rows;
     }
 
@@ -100,17 +85,17 @@ class PaginationHandler {
         return new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setLabel('Support Server')
+                    .setLabel('Support')
                     .setEmoji(emojis.invite.match(/:(\d+)>/)?.[1] || '🔗')
                     .setStyle(ButtonStyle.Link)
                     .setURL(config.links.support),
                 new ButtonBuilder()
-                    .setLabel('GitHub Source')
+                    .setLabel('GitHub')
                     .setEmoji(emojis.js.match(/:(\d+)>/)?.[1] || '📝')
                     .setStyle(ButtonStyle.Link)
                     .setURL(config.links.github),
                 new ButtonBuilder()
-                    .setLabel('Bot Invite')
+                    .setLabel('Invite Bot')
                     .setEmoji(emojis.link.match(/:(\d+)>/)?.[1] || '🤖')
                     .setStyle(ButtonStyle.Link)
                     .setURL(config.links.invite),

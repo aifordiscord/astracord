@@ -109,36 +109,33 @@ class CustomEmbedBuilder {
     createMainHelpEmbed(client) {
         const embed = new EmbedBuilder()
             .setColor(config.colors.primary)
-            .setTitle(`${this.addEmoji('astracord')} ${client.user.username} Help`)
-            .setDescription('Welcome to the advanced help system! Choose a category below to explore commands.')
+            .setTitle(`${this.addEmoji('astracord')} ${client.user.username} Help Center`)
+            .setDescription(`**Welcome to ${client.user.username}!** 🎉\n\nA powerful Discord bot with **${client.commands.size} commands** across multiple categories.\nSelect a category below to explore available commands.`)
             .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp();
 
-        // Add category information
-        Object.entries(config.categories).forEach(([key, category]) => {
+        // Add category information in a cleaner format
+        const categories = Object.entries(config.categories).map(([key, category]) => {
             const commandCount = client.commands.filter(cmd => cmd.category === key).size;
-            embed.addFields({
-                name: `${this.addEmoji(category.emoji)} ${category.name}`,
-                value: `${category.description}\n**Commands:** ${commandCount}`,
-                inline: true
-            });
-        });
+            return `${this.addEmoji(category.emoji)} **${category.name}** - ${commandCount} commands\n${category.description}`;
+        }).join('\n\n');
 
         embed.addFields(
             {
-                name: `${this.addEmoji('info')} How to Use`,
-                value: 'Use the buttons below to navigate through different command categories.',
+                name: `📋 Command Categories`,
+                value: categories,
                 inline: false
             },
             {
-                name: `${this.addEmoji('link')} Important Links`,
-                value: `${this.addEmoji('invite')} [Support Server](${config.links.support})\n${this.addEmoji('js')} [GitHub Source](${config.links.github})\n${this.addEmoji('link')} [Bot Invite](${config.links.invite})\n${this.addEmoji('astracord')} [Website](${config.links.website})`,
+                name: `${this.addEmoji('info')} Quick Help`,
+                value: `• Use buttons below to browse categories\n• Use \`/help [command]\` for detailed command info\n• All commands use slash (/) syntax`,
                 inline: false
             }
         );
 
         embed.setFooter({
-            text: `Total Commands: ${client.commands.size} • Use /help [command] for detailed info`
+            text: `${config.botName} v${config.version} • Made by ${config.author}`,
+            iconURL: client.user.displayAvatarURL({ size: 64 })
         });
 
         return embed;
