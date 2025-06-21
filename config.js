@@ -1,7 +1,19 @@
 const { ActivityType } = require('discord.js');
 
 module.exports = {
-    // Bot configuration
+    // AstraCord Bot configuration
+    botName: 'AstraCord',
+    version: '1.0.0',
+    author: 'AiForDiscord',
+    
+    // Links and branding
+    links: {
+        github: 'https://github.com/aifordiscord/astracord',
+        support: 'https://dsc.gg/aifordiscord',
+        invite: 'https://dsc.gg/astracord',
+        website: 'https://aifordiscord.com'
+    },
+    
     token: process.env.DISCORD_TOKEN || 'your_bot_token_here',
     clientId: process.env.CLIENT_ID || 'your_client_id_here',
     guildId: process.env.GUILD_ID || null, // Leave null for global commands
@@ -22,11 +34,22 @@ module.exports = {
     
     // Colors for embeds
     colors: {
-        primary: '#5865F2',
+        primary: '#4A90E2',
         success: '#57F287',
         warning: '#FEE75C',
         error: '#ED4245',
-        info: '#5865F2'
+        info: '#4A90E2'
+    },
+    
+    // Development credits
+    credits: {
+        ai_assistance: [
+            'ChatGPT-4o - Core architecture and command development',
+            'DeepSeek - Advanced algorithm implementation', 
+            'Claude - Code optimization and documentation',
+            'Replit Agent - Error resolution and debugging'
+        ],
+        description: 'This bot was developed using collaborative AI assistance for robust, feature-rich functionality.'
     },
     
     // Command categories

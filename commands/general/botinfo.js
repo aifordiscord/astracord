@@ -22,8 +22,8 @@ module.exports = {
             const memoryTotal = Math.round(memoryUsage.heapTotal / 1024 / 1024);
 
             const botEmbed = embedBuilder.createInfoEmbed(
-                `${embedBuilder.addEmoji('astracord')} Bot Information`,
-                `Advanced Discord Bot built with Discord.js`
+                `${embedBuilder.addEmoji('info')} AstraCord Information`,
+                `A powerful, feature-rich Discord bot with 58+ commands`
             );
 
             botEmbed.setThumbnail(client.user.displayAvatarURL({ dynamic: true, size: 256 }));
@@ -48,11 +48,21 @@ module.exports = {
                     name: '✨ Features',
                     value: `• Interactive Help System\n• Custom Emoji Support\n• Modular Command Structure\n• Advanced Error Handling\n• Pagination & Navigation`,
                     inline: false
+                },
+                {
+                    name: '🤖 Development Credits',
+                    value: `• **ChatGPT-4o** - Core architecture\n• **DeepSeek** - Algorithm implementation\n• **Claude** - Code optimization\n• **Replit Agent** - Error resolution`,
+                    inline: false
+                },
+                {
+                    name: '🔗 Links',
+                    value: `[Support Server](https://dsc.gg/aifordiscord) • [Invite Bot](https://dsc.gg/astracord) • [GitHub](https://github.com/aifordiscord/astracord)`,
+                    inline: false
                 }
             );
 
             botEmbed.setFooter({
-                text: `Created with ❤️ • Requested by ${interaction.user.username}`,
+                text: `AstraCord by AiForDiscord • Requested by ${interaction.user.username}`,
                 iconURL: interaction.user.displayAvatarURL()
             });
 

@@ -1,0 +1,37 @@
+{
+  "name": "astracord",
+  "version": "1.0.0",
+  "description": "A powerful, feature-rich Discord bot with 58+ commands across 5 categories including games, moderation, voice, and entertainment features.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "discord-bot",
+    "games",
+    "moderation",
+    "music",
+    "entertainment",
+    "astracord"
+  ],
+  "author": "AiForDiscord <contact@aifordiscord.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aifordiscord/astracord.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aifordiscord/astracord/issues"
+  },
+  "homepage": "https://github.com/aifordiscord/astracord#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.20.0"
+  }
+}
