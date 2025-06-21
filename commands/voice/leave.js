@@ -1,3 +1,4 @@
+
 const { SlashCommandBuilder } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
@@ -37,8 +38,19 @@ module.exports = {
         try {
             const channelName = botVoiceChannel.name;
             
-            // For demonstration purposes - in real implementation you'd disconnect the voice connection
-            // connection.destroy();
+            // Destroy voice connection
+            const connection = interaction.client.voiceConnections?.get(interaction.guild.id);
+            if (connection) {
+                connection.destroy();
+                interaction.client.voiceConnections.delete(interaction.guild.id);
+            }
+
+            // Stop audio player
+            const player = interaction.client.audioPlayers?.get(interaction.guild.id);
+            if (player) {
+                player.stop();
+                interaction.client.audioPlayers.delete(interaction.guild.id);
+            }
             
             const successEmbed = embedBuilder.createSuccessEmbed(
                 'Voice Channel Left',
@@ -57,17 +69,11 @@ module.exports = {
                     inline: true
                 },
                 {
-                    name: '⏱️ Session Duration',
-                    value: 'Session ended',
+                    name: '⏱️ Session',
+                    value: 'Ended',
                     inline: true
                 }
             );
-
-            successEmbed.addFields({
-                name: '💡 Note',
-                value: 'To enable full voice functionality, install `@discordjs/voice` package and implement voice connections.',
-                inline: false
-            });
 
             successEmbed.setFooter({
                 text: `Disconnected by ${interaction.user.username}`,

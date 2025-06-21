@@ -1,4 +1,6 @@
+
 const { SlashCommandBuilder } = require('discord.js');
+const { joinVoiceChannel, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
@@ -43,31 +45,33 @@ module.exports = {
         }
 
         try {
-            // Note: This is a basic implementation. For full voice functionality,
-            // you would need @discordjs/voice package
-            
             // Check if bot is already in a voice channel in this guild
             const currentConnection = interaction.guild.members.me.voice.channel;
             
-            if (currentConnection) {
-                if (currentConnection.id === voiceChannel.id) {
-                    const infoEmbed = embedBuilder.createInfoEmbed(
-                        'Already Connected',
-                        `${embedBuilder.addEmoji('voice')} I'm already in ${voiceChannel.name}!`
-                    );
-                    return interaction.reply({ embeds: [infoEmbed], ephemeral: true });
-                } else {
-                    const infoEmbed = embedBuilder.createInfoEmbed(
-                        'Moving Channels',
-                        `${embedBuilder.addEmoji('voice')} Moving from ${currentConnection.name} to ${voiceChannel.name}...`
-                    );
-                    await interaction.reply({ embeds: [infoEmbed] });
-                }
+            if (currentConnection && currentConnection.id === voiceChannel.id) {
+                const infoEmbed = embedBuilder.createInfoEmbed(
+                    'Already Connected',
+                    `${embedBuilder.addEmoji('voice')} I'm already in ${voiceChannel.name}!`
+                );
+                return interaction.reply({ embeds: [infoEmbed], ephemeral: true });
             }
 
-            // For demonstration purposes, we'll show what would happen
-            // In a real implementation, you'd use @discordjs/voice
-            
+            // Create voice connection
+            const connection = joinVoiceChannel({
+                channelId: voiceChannel.id,
+                guildId: interaction.guild.id,
+                adapterCreator: interaction.guild.voiceAdapterCreator,
+            });
+
+            // Store connection in client for other commands to use
+            if (!interaction.client.voiceConnections) {
+                interaction.client.voiceConnections = new Map();
+            }
+            interaction.client.voiceConnections.set(interaction.guild.id, connection);
+
+            // Wait for connection to be ready
+            await entersState(connection, VoiceConnectionStatus.Ready, 30000);
+
             const successEmbed = embedBuilder.createSuccessEmbed(
                 'Voice Channel Joined',
                 `${embedBuilder.addEmoji('voice')} Successfully joined **${voiceChannel.name}**!`
@@ -85,28 +89,18 @@ module.exports = {
                     inline: true
                 },
                 {
-                    name: '🔊 Features',
-                    value: 'Ready for voice commands!',
+                    name: '🔊 Status',
+                    value: 'Connected and ready!',
                     inline: true
                 }
             );
-
-            successEmbed.addFields({
-                name: '💡 Note',
-                value: 'To enable full voice functionality, install `@discordjs/voice` package and implement voice connections.',
-                inline: false
-            });
 
             successEmbed.setFooter({
                 text: `Joined by ${interaction.user.username}`,
                 iconURL: interaction.user.displayAvatarURL()
             });
 
-            if (currentConnection && currentConnection.id !== voiceChannel.id) {
-                await interaction.editReply({ embeds: [successEmbed] });
-            } else {
-                await interaction.reply({ embeds: [successEmbed] });
-            }
+            await interaction.reply({ embeds: [successEmbed] });
 
         } catch (error) {
             console.error('Error joining voice channel:', error);

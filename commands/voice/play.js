@@ -1,23 +1,25 @@
+
 const { SlashCommandBuilder } = require('discord.js');
+const { createAudioPlayer, createAudioResource, AudioPlayerStatus, VoiceConnectionStatus, joinVoiceChannel, entersState } = require('@discordjs/voice');
+const ytdl = require('ytdl-core');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Play audio from a URL or search query')
+        .setDescription('Play audio from a YouTube URL')
         .addStringOption(option =>
-            option.setName('query')
-                .setDescription('URL or search term for audio')
+            option.setName('url')
+                .setDescription('YouTube URL to play')
                 .setRequired(true)
-                .setMaxLength(500)
         ),
 
-    usage: '/play <query>',
+    usage: '/play <url>',
     cooldown: 5000,
 
     async execute(interaction) {
         const embedBuilder = new CustomEmbedBuilder();
-        const query = interaction.options.getString('query');
+        const url = interaction.options.getString('url');
 
         const voiceChannel = interaction.member.voice.channel;
         
@@ -39,40 +41,115 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
-        const playEmbed = embedBuilder.createSuccessEmbed(
-            'Audio Request Received',
-            `${embedBuilder.addEmoji('voice')} Processing your request...`
-        );
+        // Validate YouTube URL
+        if (!ytdl.validateURL(url)) {
+            const errorEmbed = embedBuilder.createErrorEmbed(
+                'Invalid URL',
+                'Please provide a valid YouTube URL!'
+            );
+            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        }
 
-        playEmbed.addFields(
-            {
-                name: '🎵 Query',
-                value: query,
-                inline: false
-            },
-            {
-                name: '📍 Channel',
-                value: voiceChannel.name,
-                inline: true
-            },
-            {
-                name: '👤 Requested by',
-                value: interaction.user.username,
-                inline: true
+        await interaction.deferReply();
+
+        try {
+            // Initialize voice connections map if not exists
+            if (!interaction.client.voiceConnections) {
+                interaction.client.voiceConnections = new Map();
             }
-        );
 
-        playEmbed.addFields({
-            name: '💡 Implementation Note',
-            value: 'To enable full audio playback, install `@discordjs/voice` and implement audio streaming. This command shows the structure for audio functionality.',
-            inline: false
-        });
+            // Get or create voice connection
+            let connection = interaction.client.voiceConnections.get(interaction.guild.id);
+            
+            if (!connection || connection.state.status === VoiceConnectionStatus.Destroyed) {
+                connection = joinVoiceChannel({
+                    channelId: voiceChannel.id,
+                    guildId: interaction.guild.id,
+                    adapterCreator: interaction.guild.voiceAdapterCreator,
+                });
+                interaction.client.voiceConnections.set(interaction.guild.id, connection);
+            }
 
-        playEmbed.setFooter({
-            text: 'Audio system ready for implementation',
-            iconURL: interaction.client.user.displayAvatarURL()
-        });
+            // Wait for connection to be ready
+            await entersState(connection, VoiceConnectionStatus.Ready, 30000);
 
-        await interaction.reply({ embeds: [playEmbed] });
+            // Get video info
+            const info = await ytdl.getInfo(url);
+            const title = info.videoDetails.title;
+
+            // Create audio stream
+            const stream = ytdl(url, {
+                filter: 'audioonly',
+                quality: 'highestaudio',
+            });
+
+            const resource = createAudioResource(stream);
+            
+            // Create or get audio player
+            if (!interaction.client.audioPlayers) {
+                interaction.client.audioPlayers = new Map();
+            }
+
+            let player = interaction.client.audioPlayers.get(interaction.guild.id);
+            if (!player) {
+                player = createAudioPlayer();
+                interaction.client.audioPlayers.set(interaction.guild.id, player);
+            }
+
+            // Subscribe connection to player
+            connection.subscribe(player);
+
+            // Play the resource
+            player.play(resource);
+
+            const playEmbed = embedBuilder.createSuccessEmbed(
+                'Now Playing',
+                `${embedBuilder.addEmoji('voice')} **${title}**`
+            );
+
+            playEmbed.addFields(
+                {
+                    name: '🎵 Song',
+                    value: title,
+                    inline: false
+                },
+                {
+                    name: '📍 Channel',
+                    value: voiceChannel.name,
+                    inline: true
+                },
+                {
+                    name: '👤 Requested by',
+                    value: interaction.user.username,
+                    inline: true
+                }
+            );
+
+            playEmbed.setFooter({
+                text: 'Use /pause, /resume, /skip, or /stop to control playback',
+                iconURL: interaction.client.user.displayAvatarURL()
+            });
+
+            await interaction.editReply({ embeds: [playEmbed] });
+
+            // Handle player events
+            player.on(AudioPlayerStatus.Idle, () => {
+                console.log('Audio finished playing');
+            });
+
+            player.on('error', error => {
+                console.error('Audio player error:', error);
+            });
+
+        } catch (error) {
+            console.error('Error playing audio:', error);
+            
+            const errorEmbed = embedBuilder.createErrorEmbed(
+                'Playback Failed',
+                'An error occurred while trying to play the audio. Please check the URL and try again.'
+            );
+            
+            await interaction.editReply({ embeds: [errorEmbed] });
+        }
     }
 };
