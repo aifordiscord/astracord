@@ -6,7 +6,7 @@
   
   <p><strong>A powerful, feature-rich Discord bot with 47+ commands across 4 categories</strong></p>
   
-  [![Discord](https://img.shields.io/discord/YOUR_SERVER_ID?color=7289da&logo=discord&logoColor=white&label=Support%20Server)](https://dsc.gg/aifordiscord)
+  [![Discord](https://img.shields.io/discord/1378278142698848276?color=7289da&logo=discord&logoColor=white&label=Support%20Server)](https://dsc.gg/aifordiscord)
   [![Bot Invite](https://img.shields.io/badge/Invite%20Bot-AstraCord-7289da?logo=discord&logoColor=white)](https://dsc.gg/astracord)
   [![GitHub Stars](https://img.shields.io/github/stars/aifordiscord/astracord?style=social)](https://github.com/aifordiscord/astracord)
   [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org)
