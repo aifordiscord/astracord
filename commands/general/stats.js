@@ -15,7 +15,11 @@ module.exports = {
 
         try {
             const totalGuilds = client.guilds.cache.size;
-            const totalUsers = client.users.cache.size;
+            // Calculate total users across all guilds
+            let totalUsers = 0;
+            for (const guild of client.guilds.cache.values()) {
+                totalUsers += guild.memberCount || 0;
+            }
             const totalChannels = client.channels.cache.size;
             const totalCommands = client.commands.size;
             
@@ -50,13 +54,16 @@ module.exports = {
                 const channels = guild.channels.cache;
                 const textChannels = channels.filter(c => c.type === ChannelType.GuildText).size;
                 const voiceChannels = channels.filter(c => c.type === ChannelType.GuildVoice).size;
+                
+                // Fetch members for accurate count
+                await guild.members.fetch();
                 const members = guild.members.cache;
                 const bots = members.filter(m => m.user.bot).size;
                 const humans = members.size - bots;
 
                 statsEmbed.addFields({
                     name: '🏠 This Server',
-                    value: `**Members:** ${guild.memberCount}\n**Humans:** ${humans}\n**Bots:** ${bots}\n**Text Channels:** ${textChannels}\n**Voice Channels:** ${voiceChannels}\n**Roles:** ${guild.roles.cache.size}`,
+                    value: `**Members:** ${members.size}\n**Humans:** ${humans}\n**Bots:** ${bots}\n**Text Channels:** ${textChannels}\n**Voice Channels:** ${voiceChannels}\n**Roles:** ${guild.roles.cache.size}`,
                     inline: true
                 });
             }

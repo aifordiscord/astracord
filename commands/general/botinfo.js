@@ -20,6 +20,12 @@ module.exports = {
             const memoryUsage = process.memoryUsage();
             const memoryUsed = Math.round(memoryUsage.heapUsed / 1024 / 1024);
             const memoryTotal = Math.round(memoryUsage.heapTotal / 1024 / 1024);
+            
+            // Calculate total user count across all guilds
+            let totalUsers = 0;
+            for (const guild of client.guilds.cache.values()) {
+                totalUsers += guild.memberCount || 0;
+            }
 
             const botEmbed = embedBuilder.createInfoEmbed(
                 `${embedBuilder.addEmoji('info')} AstraCord Information`,
@@ -36,7 +42,7 @@ module.exports = {
                 },
                 {
                     name: '📊 Server Stats',
-                    value: `**Servers:** ${client.guilds.cache.size}\n**Users:** ${client.users.cache.size}\n**Channels:** ${client.channels.cache.size}\n**Ping:** ${Math.round(client.ws.ping)}ms`,
+                    value: `**Servers:** ${client.guilds.cache.size}\n**Users:** ${totalUsers}\n**Channels:** ${client.channels.cache.size}\n**Ping:** ${Math.round(client.ws.ping)}ms`,
                     inline: true
                 },
                 {

@@ -34,10 +34,14 @@ module.exports = {
             const voiceChannels = channels.filter(c => c.type === ChannelType.GuildVoice).size;
             const categories = channels.filter(c => c.type === ChannelType.GuildCategory).size;
 
+            // Fetch all members to get accurate count
+            await guild.members.fetch();
+            const updatedMembers = guild.members.cache;
+            
             // Count member status
-            const onlineMembers = members.filter(m => m.presence?.status === 'online').size;
-            const bots = members.filter(m => m.user.bot).size;
-            const humans = members.size - bots;
+            const onlineMembers = updatedMembers.filter(m => m.presence?.status === 'online').size;
+            const bots = updatedMembers.filter(m => m.user.bot).size;
+            const humans = updatedMembers.size - bots;
 
             const serverEmbed = embedBuilder.createInfoEmbed(
                 `${embedBuilder.addEmoji('info')} Server Information`,
@@ -54,7 +58,7 @@ module.exports = {
                 },
                 {
                     name: '👥 Members',
-                    value: `**Total:** ${guild.memberCount}\n**Humans:** ${humans}\n**Bots:** ${bots}\n**Online:** ${onlineMembers}`,
+                    value: `**Total:** ${updatedMembers.size}\n**Humans:** ${humans}\n**Bots:** ${bots}\n**Online:** ${onlineMembers}`,
                     inline: true
                 },
                 {

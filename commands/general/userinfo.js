@@ -17,7 +17,16 @@ module.exports = {
     async execute(interaction) {
         const embedBuilder = new CustomEmbedBuilder();
         const targetUser = interaction.options.getUser('user') || interaction.user;
-        const targetMember = interaction.guild?.members.cache.get(targetUser.id);
+        let targetMember = null;
+        
+        if (interaction.guild) {
+            try {
+                targetMember = await interaction.guild.members.fetch(targetUser.id);
+            } catch (error) {
+                // User might not be in the server
+                console.log('User not found in guild:', error.message);
+            }
+        }
 
         try {
             const userEmbed = embedBuilder.createInfoEmbed(
