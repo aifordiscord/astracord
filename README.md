@@ -23,7 +23,7 @@ AstraCord is a comprehensive Discord bot built with modern architecture and adva
 - **📊 Server Management** - Server info, user info, statistics, and administration tools
 - **🔧 Advanced Help System** - Interactive navigation with pagination and category browsing
 - **🎨 Custom Emoji Integration** - Rich embeds with custom emojis stored in JSON format
-- **📝 Professional Logging** - Comprehensive logging system for monitoring and debugging
+- **📝 Professional Logging** - Comprehensive logging system for monitoring and debugging 
 
 ## 🚀 Quick Start
 
