@@ -41,20 +41,13 @@ module.exports = {
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
-        // Validate YouTube URL with ytdl-core
-        try {
-            if (!ytdl.validateURL(url)) {
-                const errorEmbed = embedBuilder.createErrorEmbed(
-                    'Invalid YouTube URL',
-                    'Please provide a valid YouTube video URL!\n\nExample formats:\n• https://youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID'
-                );
-                return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
-            }
-        } catch (error) {
-            console.error('URL validation error:', error);
+        // Validate YouTube URL with improved regex pattern
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/)[\w-]+(&[\w=]*)?$/;
+        
+        if (!youtubeRegex.test(url)) {
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Invalid YouTube URL',
-                'Please provide a valid YouTube video URL!'
+                'Please provide a valid YouTube video URL!\n\nExample formats:\n• https://youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID'
             );
             return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -106,6 +99,7 @@ module.exports = {
             const stream = ytdl(url, {
                 filter: 'audioonly',
                 quality: 'highestaudio',
+                highWaterMark: 1 << 25
             });
 
             const resource = createAudioResource(stream);
