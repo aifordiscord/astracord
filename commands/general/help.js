@@ -1,7 +1,8 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 const paginationHandler = require('../../utils/pagination.js');
 const config = require('../../config.js');
+const emojis = require('../../data/emojis.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -84,6 +85,9 @@ module.exports = {
         const mainEmbed = embedBuilder.createMainHelpEmbed(interaction.client);
         const categoryButtons = paginationHandler.createCategoryButtons();
 
+        // Create link buttons row
+        const linkButtonsRow = paginationHandler.createLinkButtonsRow();
+
         // Store pagination data
         paginationHandler.createPaginationData(
             interaction.user.id,
@@ -95,7 +99,7 @@ module.exports = {
 
         await interaction.reply({
             embeds: [mainEmbed],
-            components: categoryButtons
+            components: [...categoryButtons, linkButtonsRow]
         });
     }
 };

@@ -92,6 +92,36 @@ class PaginationHandler {
         return rows;
     }
 
+    createLinkButtonsRow() {
+        const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+        const config = require('../config.js');
+        const emojis = require('../data/emojis.json');
+        
+        return new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setLabel('Support Server')
+                    .setEmoji(emojis.invite.match(/:(\d+)>/)?.[1] || '🔗')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(config.links.support),
+                new ButtonBuilder()
+                    .setLabel('GitHub Source')
+                    .setEmoji(emojis.js.match(/:(\d+)>/)?.[1] || '📝')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(config.links.github),
+                new ButtonBuilder()
+                    .setLabel('Bot Invite')
+                    .setEmoji(emojis.link.match(/:(\d+)>/)?.[1] || '🤖')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(config.links.invite),
+                new ButtonBuilder()
+                    .setLabel('Website')
+                    .setEmoji(emojis.astracord.match(/:(\d+)>/)?.[1] || '🌐')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(config.links.website)
+            );
+    }
+
     createPaginationData(userId, category, currentPage, totalPages, commands) {
         const data = {
             userId,

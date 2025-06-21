@@ -109,8 +109,14 @@ async function handleButtonInteraction(interaction) {
     try {
         if (interaction.customId === 'help_home') {
             // Return to main help menu
+            const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+            const emojis = require('../data/emojis.json');
+            
             const mainEmbed = embedBuilder.createMainHelpEmbed(interaction.client);
             const categoryButtons = paginationHandler.createCategoryButtons();
+            
+            // Create link buttons row
+            const linkButtonsRow = paginationHandler.createLinkButtonsRow();
             
             paginationHandler.updatePaginationData(userId, {
                 category: 'main',
@@ -120,7 +126,7 @@ async function handleButtonInteraction(interaction) {
 
             await interaction.update({
                 embeds: [mainEmbed],
-                components: categoryButtons
+                components: [...categoryButtons, linkButtonsRow]
             });
             
         } else if (interaction.customId.startsWith('help_category_')) {
@@ -165,6 +171,34 @@ async function handleButtonInteraction(interaction) {
             const navigationRow = paginationHandler.createNavigationButtons(currentPage, totalPages);
             const categoryButtons = paginationHandler.createCategoryButtons();
             
+            // Create link buttons row
+            const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+            const emojis = require('../data/emojis.json');
+            
+            const linkButtonsRow = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setLabel('Support Server')
+                        .setEmoji(emojis.invite.match(/:(\d+)>/)?.[1] || '🔗')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.support),
+                    new ButtonBuilder()
+                        .setLabel('GitHub Source')
+                        .setEmoji(emojis.js.match(/:(\d+)>/)?.[1] || '📝')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.github),
+                    new ButtonBuilder()
+                        .setLabel('Bot Invite')
+                        .setEmoji(emojis.link.match(/:(\d+)>/)?.[1] || '🤖')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.invite),
+                    new ButtonBuilder()
+                        .setLabel('Website')
+                        .setEmoji(emojis.astracord.match(/:(\d+)>/)?.[1] || '🌐')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.website)
+                );
+            
             paginationHandler.updatePaginationData(userId, {
                 category,
                 currentPage,
@@ -174,7 +208,7 @@ async function handleButtonInteraction(interaction) {
 
             await interaction.update({
                 embeds: [categoryEmbed],
-                components: [navigationRow, ...categoryButtons]
+                components: [navigationRow, ...categoryButtons, linkButtonsRow]
             });
             
         } else if (interaction.customId === 'help_previous' || interaction.customId === 'help_next') {
@@ -218,11 +252,39 @@ async function handleButtonInteraction(interaction) {
             const navigationRow = paginationHandler.createNavigationButtons(newPage, paginationData.totalPages);
             const categoryButtons = paginationHandler.createCategoryButtons();
             
+            // Create link buttons row
+            const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+            const emojis = require('../data/emojis.json');
+            
+            const linkButtonsRow = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setLabel('Support Server')
+                        .setEmoji(emojis.invite.match(/:(\d+)>/)?.[1] || '🔗')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.support),
+                    new ButtonBuilder()
+                        .setLabel('GitHub Source')
+                        .setEmoji(emojis.js.match(/:(\d+)>/)?.[1] || '📝')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.github),
+                    new ButtonBuilder()
+                        .setLabel('Bot Invite')
+                        .setEmoji(emojis.link.match(/:(\d+)>/)?.[1] || '🤖')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.invite),
+                    new ButtonBuilder()
+                        .setLabel('Website')
+                        .setEmoji(emojis.astracord.match(/:(\d+)>/)?.[1] || '🌐')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(config.links.website)
+                );
+            
             paginationHandler.updatePaginationData(userId, { currentPage: newPage });
 
             await interaction.update({
                 embeds: [categoryEmbed],
-                components: [navigationRow, ...categoryButtons]
+                components: [navigationRow, ...categoryButtons, linkButtonsRow]
             });
         }
         

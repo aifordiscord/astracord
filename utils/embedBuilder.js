@@ -124,11 +124,18 @@ class CustomEmbedBuilder {
             });
         });
 
-        embed.addFields({
-            name: `${this.addEmoji('info')} How to Use`,
-            value: 'Use the buttons below to navigate through different command categories.',
-            inline: false
-        });
+        embed.addFields(
+            {
+                name: `${this.addEmoji('info')} How to Use`,
+                value: 'Use the buttons below to navigate through different command categories.',
+                inline: false
+            },
+            {
+                name: `${this.addEmoji('link')} Important Links`,
+                value: `${this.addEmoji('invite')} [Support Server](${config.links.support})\n${this.addEmoji('js')} [GitHub Source](${config.links.github})\n${this.addEmoji('link')} [Bot Invite](${config.links.invite})\n${this.addEmoji('astracord')} [Website](${config.links.website})`,
+                inline: false
+            }
+        );
 
         embed.setFooter({
             text: `Total Commands: ${client.commands.size} • Use /help [command] for detailed info`
