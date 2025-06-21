@@ -1,4 +1,3 @@
-
 const { SlashCommandBuilder } = require('discord.js');
 const { joinVoiceChannel, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
@@ -16,7 +15,7 @@ module.exports = {
 
         // Check if user is in a voice channel
         const voiceChannel = interaction.member.voice.channel;
-        
+
         if (!voiceChannel) {
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'No Voice Channel',
@@ -27,7 +26,7 @@ module.exports = {
 
         // Check permissions
         const permissions = voiceChannel.permissionsFor(interaction.guild.members.me);
-        
+
         if (!permissions.has('Connect')) {
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Missing Permissions',
@@ -45,15 +44,9 @@ module.exports = {
         }
 
         try {
-            // Check if bot is already in a voice channel in this guild
-            const currentConnection = interaction.guild.members.me.voice.channel;
-            
-            if (currentConnection && currentConnection.id === voiceChannel.id) {
-                const infoEmbed = embedBuilder.createInfoEmbed(
-                    'Already Connected',
-                    `${embedBuilder.addEmoji('voice')} I'm already in ${voiceChannel.name}!`
-                );
-                return interaction.reply({ embeds: [infoEmbed], ephemeral: true });
+            // Initialize voice connections map if not exists
+            if (!interaction.client.voiceConnections) {
+                interaction.client.voiceConnections = new Map();
             }
 
             // Create voice connection
@@ -63,13 +56,10 @@ module.exports = {
                 adapterCreator: interaction.guild.voiceAdapterCreator,
             });
 
-            // Store connection in client for other commands to use
-            if (!interaction.client.voiceConnections) {
-                interaction.client.voiceConnections = new Map();
-            }
+            // Store the connection
             interaction.client.voiceConnections.set(interaction.guild.id, connection);
 
-            // Wait for connection to be ready
+            // Wait for connection to be ready with longer timeout
             await entersState(connection, VoiceConnectionStatus.Ready, 30000);
 
             const successEmbed = embedBuilder.createSuccessEmbed(
@@ -104,12 +94,12 @@ module.exports = {
 
         } catch (error) {
             console.error('Error joining voice channel:', error);
-            
+
             const errorEmbed = embedBuilder.createErrorEmbed(
                 'Connection Failed',
                 'An error occurred while trying to join the voice channel. Please try again later.'
             );
-            
+
             await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
     }

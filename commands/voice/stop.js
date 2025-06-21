@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { SlashCommandBuilder } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
@@ -64,25 +63,11 @@ module.exports = {
             }
         );
 
-        await interaction.reply({ embeds: [stopEmbed] });
-
-        stopEmbed.addFields(
-            {
-                name: '⏹️ Status',
-                value: 'Stopped',
-                inline: true
-            },
-            {
-                name: '📍 Channel',
-                value: botVoiceChannel.name,
-                inline: true
-            },
-            {
-                name: '🗑️ Queue',
-                value: 'Cleared',
-                inline: true
-            }
-        );
+        stopEmbed.addFields({
+            name: '🗑️ Queue',
+            value: 'Cleared',
+            inline: true
+        });
 
         stopEmbed.setFooter({
             text: `Stopped by ${interaction.user.username}`,

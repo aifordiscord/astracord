@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { SlashCommandBuilder } = require('discord.js');
 const CustomEmbedBuilder = require('../../utils/embedBuilder.js');
 
 module.exports = {
@@ -75,6 +74,6 @@ module.exports = {
             }
         }
 
-        await interaction.reply({ embeds: [pauseEmbed] }); });
+        await interaction.reply({ embeds: [pauseEmbed] });
     }
 };

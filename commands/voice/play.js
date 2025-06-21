@@ -83,7 +83,7 @@ module.exports = {
 
             // Wait for connection to be ready with better error handling
             try {
-                await entersState(connection, VoiceConnectionStatus.Ready, 15000);
+                await entersState(connection, VoiceConnectionStatus.Ready, 30000);
             } catch (error) {
                 console.error('Error joining voice channel:', error);
                 const errorEmbed = embedBuilder.createErrorEmbed(
