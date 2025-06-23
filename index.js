@@ -3,7 +3,7 @@ const config = require('./config.js');
 const commandHandler = require('./handlers/commandHandler.js');
 const eventHandler = require('./handlers/eventHandler.js');
 const logger = require('./utils/logger.js');
-
+const deploy = require ('./deploy-commands.js')
 // Create a new client instance
 const client = new Client({
     intents: [
