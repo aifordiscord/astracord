@@ -2,7 +2,10 @@
 # AstraCord
 
 <div align="center">
-  <img src="https://github.com/aifordiscord/astracord/raw/main/assets/banner.png" alt="AstraCord Banner" width="800"/>
+  <a href="https://dsc.gg/astracord" target="_blank">
+    <img src="https://watchbot.cwkbot.fun/api/badge/1384948025721360394" alt="AstraCord status" width="800"/>
+  </a>
+</div>
   
   <p><strong>A powerful, feature-rich Discord bot with 47+ commands across 4 categories</strong></p>
   
