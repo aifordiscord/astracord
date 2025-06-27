@@ -3,7 +3,7 @@
 
 <div align="center">
   <a href="https://dsc.gg/astracord" target="_blank">
-    <img src="https://watchbot.cwkbot.fun/api/badge/1384948025721360394" alt="AstraCord status" width="800"/>
+    <img src="https://watchbot.cwkbot.fun/api/badge/1384948025721360394" alt="AstraCord status" width="600"/>
   </a>
 </div>
   
