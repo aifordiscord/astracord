@@ -215,3 +215,6 @@ AstraCord was developed using advanced AI assistance including:
     <a href="https://github.com/aifordiscord/astracord">GitHub</a>
   </p>
 </div>
+
+
+![views](https://2ac61851-9e32-424b-aa5b-be6f88cdc885-00-km60sh0zr7fs.worf.replit.dev/api/badge/aifordiscord/astracord/views?style=glow)
