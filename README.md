@@ -35,7 +35,8 @@ AstraCord is a comprehensive Discord bot built with modern architecture and adva
 - Node.js 18 or higher
 - Discord Bot Token
 - Discord Application Client ID
-
+### YouTube video toutoreal 
+[Video](https://youtu.be/Gwtg-rvt76k?si=WiTkpZzrG1E4SC5r) 
 ### Installation
 
 1. **Clone the repository**
@@ -166,7 +167,6 @@ Edit `data/emojis.json` to customize emojis used throughout the bot:
   "loading": "⏳"
 }
 ```
-
 ## 🤝 Contributing
 
 We welcome contributions! Please follow these steps:
